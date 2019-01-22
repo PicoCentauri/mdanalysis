@@ -46,7 +46,10 @@ Available analysis modules
     Creating and manipulating densities such as the density ow water
     molecules around a protein. Makes use of the external
     GridDataFormats_ package.
-
+    
+:mod:`~MDAnalysis.analysis.dielectric`
+    Calcualate dipole moment fluctuations and the static dielectric constant.
+        
 :mod:`~MDAnalysis.analysis.distances`
     Functions to calculate distances between atoms and selections; it
     contains the often-used
@@ -116,6 +119,7 @@ __all__ = [
     'contacts',
     'density',
     'distances',
+    'dielectric'
     'gnm',
     'hbonds',
     'hydrogenbonds',

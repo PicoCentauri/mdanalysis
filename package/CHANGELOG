@@ -313,10 +313,6 @@ Testsuite
 
 Changes
   * Added Windows support
-  
-Enhancements
-   * Added dielectric analysis module
-
 
 11/05/18 orbeckst, PicoCentauri, richardjgowers, zemanj
   * 0.19.1

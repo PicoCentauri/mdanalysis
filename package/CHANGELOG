@@ -22,6 +22,7 @@ mm/dd/yy richardjgowers, kain88-de, lilyminium, p-j-smith, bdice, joaomcteixeira
   * 0.21.0
 
 Fixes
+  * Added dielectric analysis module (PR #2118)
   * Updated tests to have explicit fixtures (Issue #2618)
   * XDR offsets now read from trajectory if offsets file read-in fails on
     IOError (Issue #1893, PR #2611)
@@ -312,10 +313,6 @@ Testsuite
 
 Changes
   * Added Windows support
-  
-Enhancements
-   * Added dielectric analysis module
-
 
 11/05/18 orbeckst, PicoCentauri, richardjgowers, zemanj
   * 0.19.1

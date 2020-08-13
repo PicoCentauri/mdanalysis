@@ -138,3 +138,5 @@ __all__ = [
     'rms',
     'waterdynamics',
 ]
+
+analysis_interfaces = {}

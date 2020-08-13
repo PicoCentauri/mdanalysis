@@ -33,9 +33,11 @@ import logging
 import itertools
 
 import numpy as np
+from numpydoc.docscrape import NumpyDocString
 from MDAnalysis import coordinates
 from MDAnalysis.core.groups import AtomGroup
 from MDAnalysis.lib.log import ProgressBar
+from MDAnalysis.analysis import analysis_interfaces
 
 logger = logging.getLogger(__name__)
 
@@ -350,3 +352,78 @@ def _filter_baseanalysis_kwargs(function, kwargs):
         base_args[argname] = kwargs.pop(argname, default)
 
     return base_args, kwargs
+
+
+def add_to_CLIs(callable_obj):
+    """
+    Inspect Analysis class or function.
+
+    Decorator.
+    """
+    analysis_interfaces[callable_obj.__name__] = {}
+    analysis_interfaces[callable_obj.__name__]["callable"] = callable_obj
+
+    sig = inspect.signature(callable_obj)
+    doc = NumpyDocString(callable_obj.__doc__)
+
+    # args for CLIs
+    positional_args = {}
+    optional_args = {}
+
+    for sig_name, sig_param in sig.parameters.items():
+
+        if sig_param.kind == inspect.Parameter.VAR_KEYWORD:
+            # this is **kwargs
+            # define behaviour here
+            # i doubt this is of any use,
+            # if exists in analysis classes mostlikely refers to
+            # receiving parameters remaining from other contexts
+            pass
+
+        elif sig_param.kind == inspect.Parameter.VAR_POSITIONAL:
+            # this is for *args
+            # I think the same rationale as for VAR_KEYWORD applies
+            pass
+
+        elif sig_param.default == inspect.Parameter.empty:
+            for doc_param in doc["Parameters"]:
+                if doc_param.name == sig_name:
+                    positional_args[sig_name] = {
+                        "type": doc_param.type.split()[0],
+                        "desc": " ".join(doc_param.desc),
+                    }
+                    break
+            # else reaches if the parameter in the signature is not present in the docstring
+            # it shouldn't, but just in case :-)
+            # unless we explicitly decide not to consider any parameters not referenced in the
+            # documentation.
+            else:
+                # str is the default value of argparse arguments type parameter
+                positional_args[sig_name] = {
+                    "type": "str",
+                    "desc": "No description available.",
+                }
+
+        else:
+            for doc_param in doc["Parameters"]:
+                if doc_param.name == sig_name:
+                    optional_args[sig_name] = {
+                        "type": doc_param.type.split()[0],
+                        "default": sig_param.default,
+                        "desc": " ".join(doc_param.desc),
+                    }
+                    break
+            else:
+                optional_args[sig_name] = {
+                    "type": type(sig_param.default).__name__,  # corrected here
+                    "default": sig_param.default,
+                    "desc": "No description available.",
+                }
+
+    analysis_interfaces[callable_obj.__name__]["positional"] = positional_args
+    analysis_interfaces[callable_obj.__name__]["optional"] = optional_args
+    analysis_interfaces[callable_obj.__name__]["desc"] = doc["Summary"]
+    analysis_interfaces[callable_obj.__name__]["desc_long"] = doc["Extended Summary"]
+
+    # we can add here whatever we need more
+    return callable_obj

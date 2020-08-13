@@ -173,13 +173,13 @@ from .. import units
 from ..lib import distances
 from MDAnalysis.lib.log import ProgressBar
 
-from .base import AnalysisBase
+from .base import AnalysisBase, add_to_CLIs
 
 import logging
 
 logger = logging.getLogger("MDAnalysis.analysis.density")
 
-
+@add_to_CLIs
 class DensityAnalysis(AnalysisBase):
     r"""Volumetric density analysis.
 
